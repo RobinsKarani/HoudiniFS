@@ -1,0 +1,37 @@
+# 📂 .gitignore for Houdini-FS
+
+# === Linux-specific files ===
+*~
+
+# === Compiled files ===
+*.o
+*.a
+*.so
+*.out
+*.exe
+*.dll   # Windows dynamic libraries
+
+# === Build directories ===
+/build/
+/bin/
+/dist/
+
+# === Log files ===
+*.log
+
+# === Temporary files ===
+*.bak
+*.tmp
+*.swp  # Vim swap files
+*.swo
+*.swn
+
+# === IDE directories ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === Miscellaneous ===
+.DS_Store  # macOS
+Thumbs.db  # Windows
+desktop.ini # Windows
