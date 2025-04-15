@@ -1,5 +1,3 @@
-# 📂 .gitignore for Houdini-FS
-
 # === Linux-specific files ===
 *~
 
@@ -35,3 +33,22 @@
 .DS_Store  # macOS
 Thumbs.db  # Windows
 desktop.ini # Windows
+
+# === GCC specific files ===
+*.gcda
+*.gcno
+*.gcov
+
+# === Backup files ===
+*~
+*.bak
+*.swp
+
+# === Directories related to IDEs or editors ===
+.vscode/
+.idea/
+
+# === Specific files to ignore ===
+expiry.db
+files/
+*.config
