@@ -51,4 +51,3 @@ desktop.ini # Windows
 # === Specific files to ignore ===
 expiry.db
 files/
-*.config
