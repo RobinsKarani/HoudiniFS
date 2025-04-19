@@ -4,6 +4,7 @@
 # === Compiled files ===
 *.o
 *.a
+*.0
 *.so
 *.out
 *.exe
