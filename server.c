@@ -86,3 +86,53 @@ int main(){
 
     return 0;
 }
+
+// ====================================================================================
+// 🧑🏽‍💻 SECTION 2: CONTRIBUTOR 2 — Server setup, listening and client handling loop
+// ====================================================================================
+
+int main() {
+    int server_sock, *client_sock;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t addr_size = sizeof(client_addr);
+
+    server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock < 0) {
+        perror("[-] Socket creation failed");
+        exit(1);
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        perror("[-] Bind failed");
+        exit(1);
+    }
+
+    if (listen(server_sock, 10) == 0)
+        printf("[+] Server listening on port %d...\n", PORT);
+    else {
+        perror("[-] Listen failed");
+        exit(1);
+    }
+
+    while (1) {
+        int new_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
+        if (new_sock < 0) {
+            perror("[-] Accept failed");
+            continue;
+        }
+
+        client_sock = malloc(sizeof(int));
+        *client_sock = new_sock;
+
+        pthread_t tid;
+        pthread_create(&tid, NULL, handle_client, (void*)client_sock);
+        pthread_detach(tid);
+    }
+
+    close(server_sock);
+    return 0;
+}
