@@ -87,10 +87,6 @@ int main(){
     return 0;
 }
 
-// ====================================================================================
-// 🧑🏽‍💻 SECTION 2: CONTRIBUTOR 2 — Server setup, listening and client handling loop
-// ====================================================================================
-
 int main() {
     int server_sock, *client_sock;
     struct sockaddr_in server_addr, client_addr;
