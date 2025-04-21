@@ -82,10 +82,6 @@ void* handle_client(void* arg) {
     close(client_sock);
     return NULL;
 }
-int main(){
-
-    return 0;
-}
 
 int main() {
     int server_sock, *client_sock;
