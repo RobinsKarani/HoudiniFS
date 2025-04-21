@@ -4,6 +4,7 @@
 # === Compiled files ===
 *.o
 *.a
+*.0
 *.so
 *.out
 *.exe
@@ -51,4 +52,3 @@ desktop.ini # Windows
 # === Specific files to ignore ===
 expiry.db
 files/
-*.config
