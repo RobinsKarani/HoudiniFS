@@ -87,3 +87,36 @@ int main() {
 
     return 0;
 }
+
+void *expiry_thread(void *arg) {
+    while (1) {
+        sleep(60); // check every minute
+        check_and_delete_expired_files();
+    }
+    return NULL;
+}
+
+void check_and_delete_expired_files() {
+    FILE *fp = fopen(EXPIRY_DB, "r");
+    FILE *tmp = fopen("temp.db", "w");
+    if (!fp || !tmp) return;
+
+    char filename[256];
+    time_t expiry;
+    time_t now = time(NULL);
+
+    while (fscanf(fp, "%s %ld", filename, &expiry) != EOF) {
+        if (expiry <= now) {
+            char path[300];
+            snprintf(path, sizeof(path), "%s/%s", STORAGE_DIR, filename);
+            remove(path);
+            printf("[-] Deleted expired file: %s\n", filename);
+        } else {
+            fprintf(tmp, "%s %ld\n", filename, expiry);
+        }
+    }
+
+    fclose(fp);
+    fclose(tmp);
+    rename("temp.db", EXPIRY_DB);
+}
