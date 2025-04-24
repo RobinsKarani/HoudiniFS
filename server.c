@@ -3,30 +3,26 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
 #include <time.h>
 
 #define PORT 9000
-#define BUFFER_SIZE 1024
-#define MAX_FILENAME 256
+#define MAX_FILE_SIZE (10 * 1024 * 1024) // 10MB
+#define BUFFER_SIZE 4096
+#define STORAGE_DIR "files"
+#define EXPIRY_DB "expiry.db"
 
-typedef struct {
-    char filename[MAX_FILENAME];
-    int expiry_seconds;
-} FileExpiryTask;
+void *expiry_thread(void *arg);
+void check_and_delete_expired_files();
 
-void* delete_file_after_delay(void* arg) {
-    FileExpiryTask* task = (FileExpiryTask*)arg;
-    sleep(task->expiry_seconds);
-
-    if (remove(task->filename) == 0) {
-        printf("[+] File %s has been deleted after expiry\n", task->filename);
-    } else {
-        perror("[-] Failed to delete file");
+void save_expiry(const char *filename, time_t expiry) {
+    FILE *fp = fopen(EXPIRY_DB, "a");
+    if (fp) {
+        fprintf(fp, "%s %ld\n", filename, expiry);
+        fclose(fp);
     }
+
 
     free(task);
     return NULL;
@@ -81,50 +77,69 @@ void* handle_client(void* arg) {
 
     close(client_sock);
     return NULL;
+
 }
 
 int main() {
-    int server_sock, *client_sock;
+    int server_fd, client_fd;
     struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_size = sizeof(client_addr);
+    socklen_t addrlen = sizeof(client_addr);
+    pthread_t tid;
 
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_sock < 0) {
-        perror("[-] Socket creation failed");
-        exit(1);
-    }
+    mkdir(STORAGE_DIR, 0777);
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("[-] Bind failed");
-        exit(1);
-    }
+    bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    listen(server_fd, 5);
+    printf("[+] Server listening on port %d...\n", PORT);
 
-    if (listen(server_sock, 10) == 0)
-        printf("[+] Server listening on port %d...\n", PORT);
-    else {
-        perror("[-] Listen failed");
-        exit(1);
-    }
+    pthread_create(&tid, NULL, expiry_thread, NULL);
 
     while (1) {
-        int new_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
-        if (new_sock < 0) {
-            perror("[-] Accept failed");
+        client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &addrlen);
+        char filename[256];
+        uint32_t filesize;
+        uint32_t expire_in;
+        FILE *fp;
+
+        recv(client_fd, filename, sizeof(filename), 0);
+        recv(client_fd, &filesize, sizeof(filesize), 0);
+        filesize = ntohl(filesize);
+
+        if (filesize > MAX_FILE_SIZE) {
+            char *msg = "ERROR: File exceeds 10MB.\n";
+            send(client_fd, msg, strlen(msg), 0);
+            close(client_fd);
             continue;
         }
 
-        client_sock = malloc(sizeof(int));
-        *client_sock = new_sock;
+        recv(client_fd, &expire_in, sizeof(expire_in), 0);
+        expire_in = ntohl(expire_in);
 
-        pthread_t tid;
-        pthread_create(&tid, NULL, handle_client, (void*)client_sock);
-        pthread_detach(tid);
+        char path[300];
+        snprintf(path, sizeof(path), "%s/%s", STORAGE_DIR, filename);
+        fp = fopen(path, "wb");
+
+        char buffer[BUFFER_SIZE];
+        int bytes, received = 0;
+        while (received < filesize) {
+            bytes = recv(client_fd, buffer, BUFFER_SIZE, 0);
+            fwrite(buffer, 1, bytes, fp);
+            received += bytes;
+        }
+
+        fclose(fp);
+
+        time_t expiry = time(NULL) + expire_in;
+        save_expiry(filename, expiry);
+
+        printf("[+] Received: %s (%d bytes), expires in %d seconds\n", filename, filesize, expire_in);
+        close(client_fd);
     }
 
-    close(server_sock);
     return 0;
 }
