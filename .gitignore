@@ -1,0 +1,54 @@
+# === Linux-specific files ===
+*~
+
+# === Compiled files ===
+*.o
+*.a
+*.0
+*.so
+*.out
+*.exe
+*.dll   # Windows dynamic libraries
+
+# === Build directories ===
+/build/
+/bin/
+/dist/
+
+# === Log files ===
+*.log
+
+# === Temporary files ===
+*.bak
+*.tmp
+*.swp  # Vim swap files
+*.swo
+*.swn
+
+# === IDE directories ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === Miscellaneous ===
+.DS_Store  # macOS
+Thumbs.db  # Windows
+desktop.ini # Windows
+
+# === GCC specific files ===
+*.gcda
+*.gcno
+*.gcov
+
+# === Backup files ===
+*~
+*.bak
+*.swp
+
+# === Directories related to IDEs or editors ===
+.vscode/
+.idea/
+
+# === Specific files to ignore ===
+expiry.db
+files/
