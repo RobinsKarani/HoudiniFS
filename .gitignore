@@ -51,4 +51,4 @@ desktop.ini # Windows
 
 # === Specific files to ignore ===
 expiry.db
-files/
+files/myfile.txt
