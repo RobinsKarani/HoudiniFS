@@ -102,11 +102,6 @@ HoudiniFS/
 * Size validation prevents DoS
 * Files never leave your local network
 
-## Roadmap 
-* HTTPS support
-* User authentication
-* Web interface
-* Docker containerization
 
 ## License 
 MIT License - Free for personal and commercial use
