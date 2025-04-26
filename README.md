@@ -1,4 +1,4 @@
-# Houdini File Server (HoudiniFS) 🧙‍♂
+# Houdini File Server (HoudiniFS) 
 A lightweight, self-destructing file server that automatically deletes files after their expiration time.
 
 ## Key Features 
