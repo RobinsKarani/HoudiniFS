@@ -96,11 +96,38 @@ HoudiniFS/
 * Minimal memory overhead (~2MB resident)
 * Cleanup adds <1% CPU load
 
-## Security Considerations 🔒
+## Security Considerations 
 * No authentication (intended for LAN use)
 * Filename sanitization recommended
 * Size validation prevents DoS
 * Files never leave your local network
+
+#  Use Cases for Houdini File Server
+
+Houdini File Server is designed for **temporary and secure file sharing**. It automatically deletes files after a user-defined time, ensuring sensitive data does not stay longer than needed.
+
+##  Practical Applications
+
+- **Secure Temporary File Sharing**  
+  Share sensitive files like credentials, passwords, or important documents that self-delete after a set duration — minimizing the risk of leaks.
+
+- **Internal Team Transfers**  
+  Easily move files across team members without manual cleanup. Files are automatically removed after their expiration time, keeping shared storage neat.
+
+- **Academic or Workshop Demonstrations**  
+  Professors, trainers, or speakers can share assignment files, resources, or example files with attendees, which expire after the event ends.
+
+- **Temporary Backup Drops**  
+  Use Houdini File Server to move files temporarily between personal devices or workstations, without permanent cloud storage involvement.
+
+- **Compliance with Minimal Data Retention Policies**  
+  Industries like finance, healthcare, or law often require strict short-term data retention. Houdini File Server enforces expiration automatically to assist with compliance.
+
+##  Why Call It "Houdini"?
+
+Just like the magician **Harry Houdini** who was famous for disappearing acts, the files sent to Houdini File Server **"vanish" automatically** after a certain time — **making them disappear like magic**!
+
+
 
 
 ## License 
